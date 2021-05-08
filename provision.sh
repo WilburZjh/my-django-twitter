@@ -71,7 +71,7 @@ if not User.objects.filter(username=username).exists():
 else:
     print('Superuser creation skipped.');
 "
-#printf "$script" | python manage.py shell
+printf "$script" | python manage.py shell
 
 
 # 如果想直接进入/vagrant路径下
