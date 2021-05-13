@@ -40,6 +40,8 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'debug_toolbar',
+    'accounts',
+    'tweets',
 ]
 
 REST_FRAMEWORK = {
@@ -132,4 +134,4 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-INTERNAL_IPS=['10.0.2.2']
+INTERNAL_IPS=['10.0.2.2'] # 宿主机在虚拟机眼中的地址。

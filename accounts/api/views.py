@@ -43,7 +43,7 @@ class AccountViewSet(viewsets.ViewSet):
     def login_status(self, request):
         data ={
             'has_logged_in':request.user.is_authenticated,
-            'ip':request.META['REMOTE_ADDR']
+            'ip':request.META['REMOTE_ADDR'], # 不是虚拟机的地址，而是宿主机的地址（我去访问他，我的地址是什么）
         }
         if request.user.is_authenticated:
             data['user'] = UserSerializer(request.user).data
