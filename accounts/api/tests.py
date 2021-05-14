@@ -1,6 +1,5 @@
-from django.test import TestCase
+from testing.testcases import TestCase
 from rest_framework.test import APIClient
-from django.contrib.auth.models import User
 
 LOGIN_URL = "/api/accounts/login/"
 LOGOUT_URL = "/api/accounts/logout/"
@@ -12,16 +11,17 @@ class AccountApiTests(TestCase):
     def setUp(self):
         # 这个函数会在每个 test function 执行的时候被执行
         self.client = APIClient()
-        self.user = self.createUser(
+        # self.user = self.createUser(
+        self.user = self.create_user(
             username="admin",
             password="correct password",
             email="admin@jiuzhang.com",
         )
 
-    def createUser(self, username, password, email):
-        # 不能使用User.objects.create()
-        # 因为password需要被加密，username和email需要进行一些normalize的处理。
-        return User.objects.create_user(username, email, password)
+    # def createUser(self, username, password, email):
+    #     # 不能使用User.objects.create()
+    #     # 因为password需要被加密，username和email需要进行一些normalize的处理。
+    #     return User.objects.create_user(username, email, password)
 
     # 每个测试函数必须以 test_ 开头，才会被自动调用进行测试
     # 测试必须用 post 而不是 get
