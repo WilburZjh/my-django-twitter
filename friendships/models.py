@@ -29,6 +29,7 @@ class Friendship(models.Model):
         unique_together=(
             ('from_user_id', 'to_user_id'),
         )
+        ordering=('-created_at',) # 每一次修改meta，都需要进行makemigrations。
 
     def __str__(self):
         return '{} followed {}'.format(self.from_user_id, self.to_user_id)
