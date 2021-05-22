@@ -1,4 +1,4 @@
-from rest_framework.test import APIClient
+from rest_framework.test import APIClient # 与django自带的client的区别在于 请求和response的数据格式都要求成为json。
 from testing.testcases import TestCase
 from tweets.models import Tweet
 

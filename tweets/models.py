@@ -15,6 +15,8 @@ class Tweet(models.Model):
     content = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True) # 有时区（vagrant/server所在的时区）
 
+    # Meta是一个配置信息。
+    # 在创建Tweets这个model的时候会根据配置信息去创建。
     class Meta:
         # 联合索引 compound index/composite index
         # 相当于在数据库中建立了一个我看不到的表单，这个表单中一共有3列。
@@ -28,6 +30,8 @@ class Tweet(models.Model):
             ('user', 'created_at'),
         )
 
+        # 在Tweet相关的所有queryset中如果没有指定orderby的时候，默认的是下面这个ordering。
+        # 即，只会影响orderby的默认排序行为。
         # ordering 不会对数据库产生影响。
         ordering = ('user', '-created_at')
 
