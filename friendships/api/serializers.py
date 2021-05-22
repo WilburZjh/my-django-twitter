@@ -4,6 +4,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from django.contrib.auth.models import User
 
+# serialize -> 把一个object变成一个string或者hash table。
 # 可以通过 source=xxx 指定去访问每个 model instance 的 xxx 方法
 # 即 model_instance.xxx 来获得数据
 # https://www.django-rest-framework.org/api-guide/serializers/#specifying-fields-explicitly
