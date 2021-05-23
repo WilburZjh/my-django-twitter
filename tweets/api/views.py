@@ -3,6 +3,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from tweets.api.serializers import TweetListSerializer, TweetCreateSerializer
 from tweets.models import Tweet
+from newsfeeds.services import NewsFeedService
 
 # ModelViewSet ： 默认 增删查改 都可以做, 所以这样不太合适。
 # 很多时候，我们的接口并不是总允许 给非admin的人 权限进行 增删改 操作
@@ -61,5 +62,6 @@ class TweetViewSet(viewsets.GenericViewSet):
         # 这个save()函数将会调用TweetCreateSerializer中的create()的方法。
         # 返回的是django的一个ORM的object。
         tweet=serializer.save()
+        NewsFeedService.fanout_to_followers(tweet)
         # 展示tweet和创建tweet的时候分别使用两个不同的serializer。
         return Response(TweetListSerializer(tweet).data, status=201)
