@@ -8,7 +8,7 @@ from comments.api.serializers import (
     CommentSerializerForCreate,
     CommentSerializerForUpdate,
 )
-
+from utils.decorators import required_params
 
 class CommentViewSet(viewsets.GenericViewSet):
     """
@@ -35,13 +35,16 @@ class CommentViewSet(viewsets.GenericViewSet):
             return [IsAuthenticated(), IsObjectOwner()]
         return [AllowAny()]
 
+    @required_params(params=['tweet_id'])
     def list(self, request, *args, **kwargs):
         # 指定删除某个tweet下的comments。
-        if 'tweet_id' not in request.query_params:
-            return Response({
-                    'message': 'missing tweet_id in request',
-                    'success': False,
-                }, status=status.HTTP_400_BAD_REQUEST,)
+
+        # 有required_params就不需要以下的if条件语句判断了。
+        # if 'tweet_id' not in request.query_params:
+        #     return Response({
+        #             'message': 'missing tweet_id in request',
+        #             'success': False,
+        #         }, status=status.HTTP_400_BAD_REQUEST,)
         queryset = self.get_queryset()
         comments = self.filter_queryset(queryset)\
             .prefetch_related('user')\
