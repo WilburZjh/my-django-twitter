@@ -1,30 +1,44 @@
 from rest_framework import viewsets
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from tweets.api.serializers import TweetListSerializer, TweetCreateSerializer
+from tweets.api.serializers import (
+    TweetListSerializer,
+    TweetCreateSerializer,
+    TweetSerializerWithComments,
+)
 from tweets.models import Tweet
 from newsfeeds.services import NewsFeedService
+from utils.decorators import required_params
 
 # ModelViewSet ： 默认 增删查改 都可以做, 所以这样不太合适。
 # 很多时候，我们的接口并不是总允许 给非admin的人 权限进行 增删改 操作
 # class TweetViewSet(viewsets.ModelViewSet):
 
 class TweetViewSet(viewsets.GenericViewSet):
-    # queryset = Tweet.objects.all()
+    queryset = Tweet.objects.all()
     serializer_class = TweetCreateSerializer
 
     # 这个函数
     def get_permissions(self):
-        if self.action == 'list': # action: list, create
+        if self.action in ['list', 'retrieve']: # action: list, create, retrieve
             return [AllowAny()]
         return [IsAuthenticated()]
 
+    def retrieve(self, request, *args, **kwargs):
+        # <HOMEWORK 1> 通过某个 query 参数 with_all_comments 来决定是否需要带上所有 comments
+        # <HOMEWORK 2> 通过某个 query 参数 with_preview_comments 来决定是否需要带上前三条 comments
+        tweet = self.get_object() # 必须指定queryset
+        return Response(TweetSerializerWithComments(tweet).data)
+
+    @required_params(params=['user_id'])
     def list(self, request):
         """
         重载 list 方法，不列出所有 tweets，必须要求指定 user_id 作为筛选条件
         """
-        if 'user_id' not in request.query_params:
-            return Response('missing user id', status=400)
+
+        # 有decorator之后就不需要这个if条件语句了。
+        # if 'user_id' not in request.query_params:
+        #     return Response('missing user id', status=400)
 
         # 这句查询会被翻译为
         # select * from twitter_tweets
