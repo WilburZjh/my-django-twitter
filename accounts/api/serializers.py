@@ -18,6 +18,9 @@ class UserSerializerForTweet(serializers.ModelSerializer):
 class UserSerializerForFriendship(UserSerializerForTweet):
     pass
 
+class UserSerializerForComment(UserSerializerForTweet):
+    pass
+
 # Serializer的另一个用处是用来做验证用户的输入，做validation。
 class LoginSerializer(serializers.Serializer):
     # 检查这两个默认存在的项是否有。
