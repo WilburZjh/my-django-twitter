@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = '-wk8sm0&l+u=3i8!zy0@qfdqjgm*b++qyv3u#w3vzq*8p+cuhj'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['127.0.0.1', '192.168.33.10', 'localhost']
 
@@ -31,6 +31,7 @@ ALLOWED_HOSTS = ['127.0.0.1', '192.168.33.10', 'localhost']
 # Application definition
 
 INSTALLED_APPS = [
+    # django defaults
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -38,8 +39,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    # third party packages
     'rest_framework',
     'debug_toolbar',
+    'django_filters',
+
+    # project apps
     'accounts',
     'tweets',
     'friendships',
@@ -49,7 +54,10 @@ INSTALLED_APPS = [
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS':'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10
+    'PAGE_SIZE': 10,
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend',
+    ],
 }
 
 MIDDLEWARE = [
@@ -87,16 +95,16 @@ WSGI_APPLICATION = 'twitter.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'twitter',
-        'HOST': '0.0.0.0',
-        'PORT': '3306',
-        'USER': 'root',
-        'PASSWORD': 'yourpassword', # 这里是自己下载mysql时候输入两次的那个密码
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'twitter',
+#         'HOST': '0.0.0.0',
+#         'PORT': '3306',
+#         'USER': 'root',
+#         'PASSWORD': 'yourpassword', # 这里是自己下载mysql时候输入两次的那个密码
+#     }
+# }
 
 
 # Password validation
@@ -138,3 +146,8 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 INTERNAL_IPS=['10.0.2.2'] # 宿主机在虚拟机眼中的地址。
+
+try:
+    from .local_settings import *
+except:
+    pass
