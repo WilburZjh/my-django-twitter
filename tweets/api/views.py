@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from tweets.api.serializers import (
     TweetListSerializer,
     TweetCreateSerializer,
-    TweetSerializerWithComments,
+    TweetSerializerForDetail,
 )
 from tweets.models import Tweet
 from newsfeeds.services import NewsFeedService
@@ -28,7 +28,12 @@ class TweetViewSet(viewsets.GenericViewSet):
         # <HOMEWORK 1> 通过某个 query 参数 with_all_comments 来决定是否需要带上所有 comments
         # <HOMEWORK 2> 通过某个 query 参数 with_preview_comments 来决定是否需要带上前三条 comments
         tweet = self.get_object() # 必须指定queryset
-        return Response(TweetSerializerWithComments(tweet).data)
+        serializer = TweetSerializerForDetail(
+            tweet,
+            context={'request': request},
+        )
+
+        return Response(serializer.data)
 
     @required_params(params=['user_id'])
     def list(self, request):
@@ -51,7 +56,11 @@ class TweetViewSet(viewsets.GenericViewSet):
         ).order_by('-created_at')
 
         # 将找出来的tweets传给serializer
-        serializer = TweetListSerializer(tweets, many=True) # 会返回一个list of dict, 每一个的dict都是一个TweetListSerializer
+        serializer = TweetListSerializer(
+            tweets,
+            context={'request': request},
+            many=True,
+        ) # 会返回一个list of dict, 每一个的dict都是一个TweetListSerializer
 
         # 一般来说 json 格式的 response 默认都要用 hash 的格式
         # 而不能用 list 的格式（约定俗成）
@@ -78,4 +87,9 @@ class TweetViewSet(viewsets.GenericViewSet):
         tweet=serializer.save()
         NewsFeedService.fanout_to_followers(tweet)
         # 展示tweet和创建tweet的时候分别使用两个不同的serializer。
-        return Response(TweetListSerializer(tweet).data, status=201)
+        # return Response(
+        #     TweetListSerializer(tweet, context={'request': request}).data,
+        #     status=201,
+        # )
+        serializer = TweetListSerializer(tweet, context={'request': request})
+        return Response(serializer.data, status=201)
