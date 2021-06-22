@@ -90,6 +90,9 @@ class AccountViewSet(viewsets.ViewSet):
                 "message": "Username and password does not match.",
             }, status=400)
 
+        # Create UserProfile object
+        user.profile
+
         django_login(request, user)
         return Response({
             "success": True,
