@@ -115,6 +115,7 @@ class AccountApiTests(TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data['user']['username'], 'someone')
         # 验证 user profile 已经被创建
+        print(response.data['user'])
         created_user_id = response.data['user']['id']
         profile = UserProfile.objects.filter(user_id=created_user_id).first()
         self.assertNotEqual(profile, None)
