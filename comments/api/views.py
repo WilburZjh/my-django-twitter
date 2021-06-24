@@ -1,7 +1,7 @@
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from comments.api.permissions import IsObjectOwner
+from utils.permissions import IsObjectOwner
 from comments.models import Comment
 from inbox.services import NotificationService
 from comments.api.serializers import (

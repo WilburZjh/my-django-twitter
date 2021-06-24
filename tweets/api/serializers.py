@@ -33,7 +33,7 @@ class TweetListSerializer(serializers.ModelSerializer):
         return LikeService.has_liked(self.context['request'].user, obj)
 
 class TweetSerializerForDetail(TweetListSerializer):
-    user = UserSerializer()
+    # user = UserSerializer()
     # <HOMEWORK> 使用 serialziers.SerializerMethodField 的方式实现 comments
     comments = CommentSerializer(source='comment_set', many=True)
     likes = LikeSerializer(source='like_set', many=True)
