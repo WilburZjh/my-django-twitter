@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from accounts.models import UserProfile
 from rest_framework import serializers
 from rest_framework import exceptions
 
@@ -8,20 +9,34 @@ from rest_framework import exceptions
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('username', 'email')
-
-class UserSerializerForTweet(serializers.ModelSerializer):
-    class Meta:
-        model = User
         fields = ('id', 'username')
 
-class UserSerializerForLike(UserSerializerForTweet):
+class UserSerializerWithProfile(UserSerializer):
+    nickname = serializers.CharField(source='profile.nickname')
+    avatar_url = serializers.SerializerMethodField()
+
+    def get_avatar_url(self, obj):
+        if obj.profile.avatar:
+            return obj.profile.avatar.url
+        return None
+
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'nickname', 'avatar_url')
+
+class UserSerializerForTweet(UserSerializerWithProfile):
     pass
 
-class UserSerializerForFriendship(UserSerializerForTweet):
+
+class UserSerializerForComment(UserSerializerWithProfile):
     pass
 
-class UserSerializerForComment(UserSerializerForTweet):
+
+class UserSerializerForFriendship(UserSerializerWithProfile):
+    pass
+
+
+class UserSerializerForLike(UserSerializerWithProfile):
     pass
 
 # Serializer的另一个用处是用来做验证用户的输入，做validation。
@@ -31,6 +46,11 @@ class LoginSerializer(serializers.Serializer):
     password = serializers.CharField()
 
 # 继承自ModelSerializer的时候，表示我这个field 最终serializer.save()的时候能够把这个用户实际的创建出来。
+class UserProfileSerializerForUpdate(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = ('nickname', 'avatar')
+
 class SignupSerializer(serializers.ModelSerializer):
     username = serializers.CharField(min_length=6, max_length=20)
     password = serializers.CharField(min_length=6, max_length=20)
