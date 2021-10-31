@@ -18,7 +18,7 @@ class AccountApiTests(TestCase):
         self.client = APIClient()
         self.user = self.create_user(
             username='admin',
-            email='admin@jiuzhang.com',
+            email='admin@twitter.com',
             password='correct password',
         )
 
@@ -78,7 +78,7 @@ class AccountApiTests(TestCase):
     def test_signup(self):
         data = {
             'username': 'someone',
-            'email': 'someone@jiuzhang.com',
+            'email': 'someone@twitter.com',
             'password': 'any password',
         }
         # 测试 get 请求失败
@@ -97,7 +97,7 @@ class AccountApiTests(TestCase):
         # 测试密码太短
         response = self.client.post(SIGNUP_URL, {
             'username': 'someone',
-            'email': 'someone@jiuzhang.com',
+            'email': 'someone@twitter.com',
             'password': '123',
         })
         # print(response.data)
@@ -106,7 +106,7 @@ class AccountApiTests(TestCase):
         # 测试用户名太长
         response = self.client.post(SIGNUP_URL, {
             'username': 'username is tooooooooooooooooo loooooooong',
-            'email': 'someone@jiuzhang.com',
+            'email': 'someone@twitter.com',
             'password': 'any password',
         })
         # print(response.data)
