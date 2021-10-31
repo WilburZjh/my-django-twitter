@@ -9,6 +9,7 @@ from tweets.api.serializers import (
 from tweets.models import Tweet
 from newsfeeds.services import NewsFeedService
 from utils.decorators import required_params
+from utils.paginations import EndlessPagination
 
 # ModelViewSet ： 默认 增删查改 都可以做, 所以这样不太合适。
 # 很多时候，我们的接口并不是总允许 给非admin的人 权限进行 增删改 操作
@@ -17,6 +18,7 @@ from utils.decorators import required_params
 class TweetViewSet(viewsets.GenericViewSet):
     queryset = Tweet.objects.all()
     serializer_class = TweetSerializerForCreate
+    pagination_class = EndlessPagination
 
     # 这个函数
     def get_permissions(self):
@@ -54,7 +56,7 @@ class TweetViewSet(viewsets.GenericViewSet):
         tweets = Tweet.objects.filter(
             user_id=request.query_params['user_id']
         ).order_by('-created_at')
-
+        tweets = self.paginate_queryset(tweets)
         # 将找出来的tweets传给serializer
         serializer = TweetListSerializer(
             tweets,
@@ -64,7 +66,9 @@ class TweetViewSet(viewsets.GenericViewSet):
 
         # 一般来说 json 格式的 response 默认都要用 hash 的格式
         # 而不能用 list 的格式（约定俗成）
-        return Response({'tweets': serializer.data})
+        # return Response({'tweets': serializer.data})
+        # 有pagination就需要返回 get_paginated_response
+        return self.get_paginated_response(serializer.data)
 
     def create(self, request):
         """
