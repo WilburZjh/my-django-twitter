@@ -32,3 +32,11 @@ class FriendshipService(object):
             to_user=user,
         ).prefetch_related('from_user')
         return [friendship.from_user for friendship in friendships]
+
+
+    @classmethod
+    def get_has_followed(cls, user, target):
+        return Friendship.objects.filter(
+            from_user=user,
+            to_user=target,
+        ).exists()

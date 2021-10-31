@@ -3,6 +3,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from friendships.models import Friendship
+from utils.paginations import FriendshipPagination
 from friendships.api.serializers import (
     FollowingSerializer,
     FollowerSerializer,
@@ -18,6 +19,7 @@ class FriendshipViewSet(viewsets.GenericViewSet):
     # 也就是 queryset.filter(pk=1) 查询一下这个 object 在不在
     queryset = User.objects.all()
     serializer_class = FriendshipSerializerForCreate # POST方法需要指定一个serializer_class
+    pagination_class = FriendshipPagination
 
     # 我的粉丝
     # detail=True会验证pk存不存在，若pk不存在，则会报404
@@ -25,11 +27,27 @@ class FriendshipViewSet(viewsets.GenericViewSet):
     # GET api/friendships/pk/followers/ -> 看用户pk的followers
     @action(methods=['GET'], detail=True, permission_classes=[AllowAny])
     def followers(self, request, pk):
+        # 这个friendships是所有的数据，但是我们需要根据request里面指定的参数去决定要显示哪些数据。
         friendships=Friendship.objects.filter(to_user_id=pk).order_by('-created_at')
-        serializer=FollowerSerializer(friendships, many=True)
-        return Response({
-            'followers': serializer.data,
-        }, status=status.HTTP_200_OK,)
+        """
+        Paginator是看看有没有设定pagination class
+        Return a single page of results, or `None` if pagination is disabled.
+        """
+        # 于是就需要将friendships传给paginate_queryset去根绝request里面的params进行筛选。
+        page=self.paginate_queryset(friendships)
+        serializer=FollowerSerializer(
+            page,
+            context={'request': request},
+            many=True,
+        )
+        # return Response({
+        #     'followers': serializer.data,
+        # }, status=status.HTTP_200_OK,)
+
+        # 因为指定了pagination_class，因此self.paginator会变成FriendshipPagination()。
+        # self.get_paginated_response()会调用FriendshipPagination().get_paginated_response(data)。
+        # 对Response再次进行封装。
+        return self.get_paginated_response(serializer.data)
 
     # 必须定义list函数，否则访问localhost的时候将看不到api/friendships
     # 实现localhost/api/friendships/?from_user_id=1，需要重写list函数。
@@ -40,11 +58,13 @@ class FriendshipViewSet(viewsets.GenericViewSet):
     @action(methods=['GET'], detail=True, permission_classes=[AllowAny])
     def followings(self, request, pk):
         friendships = Friendship.objects.filter(from_user_id=pk).order_by('-created_at')
-        serializer = FollowingSerializer(friendships, many=True)
-        return Response(
-            {'followings': serializer.data},
-            status=status.HTTP_200_OK,
-        )
+        page = self.paginate_queryset(friendships)
+        serializer = FollowingSerializer(page, context={'request': request}, many=True)
+        # return Response(
+        #     {'followings': serializer.data},
+        #     status=status.HTTP_200_OK,
+        # )
+        return self.get_paginated_response(serializer.data)
 
     @action(methods=['POST'], detail=True, permission_classes=[IsAuthenticated])
     def follow(self, request, pk):
@@ -70,7 +90,10 @@ class FriendshipViewSet(viewsets.GenericViewSet):
             }, status=status.HTTP_400_BAD_REQUEST)
         instance = serializer.save()
         return Response(
-            FollowingSerializer(instance).data,
+            FollowingSerializer(
+                instance,
+                context={'request': request}
+            ).data,
             status=status.HTTP_201_CREATED,
         )
 
