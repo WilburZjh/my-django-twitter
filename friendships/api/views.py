@@ -67,8 +67,15 @@ class FriendshipViewSet(viewsets.GenericViewSet):
     @action(methods=['GET'], detail=True, permission_classes=[AllowAny])
     def followings(self, request, pk):
         friendships = Friendship.objects.filter(from_user_id=pk).order_by('-created_at')
+        # print('----------------------This is followings: {}.'.format(friendships))
+        # This is followings: < QuerySet[ < Friendship: 5 followed 7 >, < Friendship: 5 followed 6 >] >.
+
         page = self.paginate_queryset(friendships)
-        serializer = FollowingSerializer(page, context={'request': request}, many=True)
+        serializer = FollowingSerializer(
+            page,
+            context={'request': request},
+            many=True,
+        )
         # return Response(
         #     {'followings': serializer.data},
         #     status=status.HTTP_200_OK,

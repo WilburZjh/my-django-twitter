@@ -9,6 +9,7 @@ from django.contrib.auth.models import User
 class FollowingUserIdSetMixin:
 
     # self: serializers.ModelSerializer => 是指定self的type必须是serializer.ModelSerializer
+    # 获取PK的所有followers。单纯的内存查询，不会访问memcached
     @property
     def following_user_id_set(self: serializers.ModelSerializer):
 

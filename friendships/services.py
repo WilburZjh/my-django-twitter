@@ -60,6 +60,9 @@ class FriendshipService(object):
         cache.set(key, user_id_set)
         return user_id_set
 
+    # 当 Friendship 有增加或者删除的时候会调用。
+    # 只有访问 localhost/api/friendships/1/follow 的时候才会有用，如果访问的是 localhost/admin 则是无效的。
+    # 可以通过使用 listener 的机制来使得访问 localhost/admin 的时候也是有效的。
     @classmethod
     def invalidate_following_cache(cls, from_user_id):
         key = FOLLOWINGS_PATTERN.format(user_id=from_user_id)
