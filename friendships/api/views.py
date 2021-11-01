@@ -10,6 +10,8 @@ from friendships.api.serializers import (
     FriendshipSerializerForCreate,
 )
 from django.contrib.auth.models import User
+from friendships.services import FriendshipService
+
 
 class FriendshipViewSet(viewsets.GenericViewSet):
     # 我们希望 POST /api/friendship/1/follow 是去 follow user_id=1 的用户
@@ -27,14 +29,21 @@ class FriendshipViewSet(viewsets.GenericViewSet):
     # GET api/friendships/pk/followers/ -> 看用户pk的followers
     @action(methods=['GET'], detail=True, permission_classes=[AllowAny])
     def followers(self, request, pk):
+        # http://localhost/api/friendships/1/followers/?page=1
         # 这个friendships是所有的数据，但是我们需要根据request里面指定的参数去决定要显示哪些数据。
         friendships=Friendship.objects.filter(to_user_id=pk).order_by('-created_at')
         """
         Paginator是看看有没有设定pagination class
         Return a single page of results, or `None` if pagination is disabled.
         """
+        # This is friendships ------>
+        # < QuerySet[ < Friendship: 6 followed 7 >, < Friendship: 1 followed 7 >, < Friendship: 5 followed 7 >] >
         # 于是就需要将friendships传给paginate_queryset去根绝request里面的params进行筛选。
         page=self.paginate_queryset(friendships)
+
+        # print('This is page {}:'.format(page))
+        # This is page ------->
+        # < QuerySet[ < Friendship: 6 followed 7 >, < Friendship: 1 followed 7 >, < Friendship: 5 followed 7 >] >
         serializer=FollowerSerializer(
             page,
             context={'request': request},
@@ -89,6 +98,7 @@ class FriendshipViewSet(viewsets.GenericViewSet):
                 'errors': serializer.errors,
             }, status=status.HTTP_400_BAD_REQUEST)
         instance = serializer.save()
+        FriendshipService.invalidate_following_cache(request.user.id)
         return Response(
             FollowingSerializer(
                 instance,
@@ -117,5 +127,6 @@ class FriendshipViewSet(viewsets.GenericViewSet):
             from_user=request.user,
             to_user=pk,
         ).delete()
+        FriendshipService.invalidate_following_cache(request.user.id)
         return Response({'success': True, 'deleted': deleted})
 
