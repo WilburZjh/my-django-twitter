@@ -15,7 +15,7 @@ class TweetApiTests(TestCase):
     # 每一个unit test被执行前都会单独执行。
     def setUp(self):
         # self.anonymous_client = APIClient()
-
+        self.clear_cache()
         self.user1 = self.create_user('user1', 'user1@jiuzhang.com')
         self.tweets1 = [
             self.create_tweet(self.user1)

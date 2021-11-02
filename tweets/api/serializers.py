@@ -9,7 +9,7 @@ from tweets.constants import TWEET_PHOTOS_UPLOAD_LIMIT
 from tweets.services import TweetService
 
 class TweetListSerializer(serializers.ModelSerializer):
-    user=UserSerializerForTweet()
+    user=UserSerializerForTweet(source='cached_user')
     comments_count = serializers.SerializerMethodField() # 定义了一个完全自定义的return格式
     likes_count = serializers.SerializerMethodField()
     has_liked=serializers.SerializerMethodField()

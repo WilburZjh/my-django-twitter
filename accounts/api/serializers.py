@@ -16,7 +16,7 @@ class UserSerializerWithProfile(UserSerializer):
     avatar_url = serializers.SerializerMethodField()
 
     def get_avatar_url(self, obj):
-        if obj.profile.avatar:
+        if obj.profile.avatar: # 这里的profile因为已经在 models 中从内存中获取了，所以并不会产生DB的查询。
             return obj.profile.avatar.url
         return None
 
