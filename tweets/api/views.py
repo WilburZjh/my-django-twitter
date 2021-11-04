@@ -10,6 +10,8 @@ from tweets.models import Tweet
 from newsfeeds.services import NewsFeedService
 from utils.decorators import required_params
 from utils.paginations import EndlessPagination
+from tweets.services import TweetService
+
 
 # ModelViewSet ： 默认 增删查改 都可以做, 所以这样不太合适。
 # 很多时候，我们的接口并不是总允许 给非admin的人 权限进行 增删改 操作
@@ -53,9 +55,13 @@ class TweetViewSet(viewsets.GenericViewSet):
         # order by created_at desc
         # 这句 SQL 查询会用到 user 和 created_at 的联合索引
         # 单纯的 user 索引是不够的
-        tweets = Tweet.objects.filter(
-            user_id=request.query_params['user_id']
-        ).order_by('-created_at')
+        # tweets = Tweet.objects.filter(
+        #     user_id=request.query_params['user_id']
+        # ).order_by('-created_at')
+
+        # redis 返回后的 tweets 有两种可能，queryset或者list of objs。
+        tweets = TweetService.get_cached_tweets(user_id=request.query_params['user_id'])
+
         tweets = self.paginate_queryset(tweets)
         # 将找出来的tweets传给serializer
         serializer = TweetListSerializer(
