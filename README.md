@@ -2,7 +2,7 @@
 ![Alt text](social-media.png?raw=true "Title")
 This project aims to implement a similar product like twitter/wechat. 
 
-This project is developed on [`Django`](https://github.com/django/django).
+This project is developed on [`Django`](https://github.com/django/django) under [`Vagrant`](https://github.com/hashicorp/vagrant).
 
 `MySQL`, `HBase`, `Memcached` and `Redis` are utilized.
 
