@@ -4,7 +4,10 @@ This project aims to implement a similar product like twitter/wechat.
 
 This project is developed on [`Django`](https://github.com/django/django) under [`Vagrant`](https://github.com/hashicorp/vagrant).
 
-`MySQL`, `HBase`, `Memcached` and `Redis` are utilized.
+Utilized databases:
+
+1. Relational : [`MySQL`](https://github.com/mysql),
+2. NoSQL: [`HBase`](https://github.com/apache/hbase), [`Redis`](https://github.com/redis/redis)
 
 Uploaded the user profile to [`Amazon S3`](https://aws.amazon.com/s3/).
 
