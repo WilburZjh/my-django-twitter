@@ -18,10 +18,10 @@ Get data from the MessageQueue based on the number of requests that each machine
 
 # Optimizating
 1. Optimized tweet and newsfeed pagination by implementing a infinite scroll pagination instead of [`page-number-pagination`](https://github.com/encode/django-rest-framework/blob/master/rest_framework/pagination.py).
-2. Utilize [`Redis`](https://github.com/redis/redis): cache lists of tweets and newsfeeds, and utilized Redis as Message Queue Broker to deliver asynchronizedfeeds fanout tasks by using Celery.
-3. Utilize [`Memcache`](https://github.com/linsomniac/python-memcached): cache friendship followings and user.
-4. Utilize [`Celery`](https://github.com/celery/celery) framework to ensure the stablility of FlashSale system. For example, restrict the request flow on multiple refreshing web page.
-
+2. Utilized [`Redis`](https://github.com/redis/redis): cache lists of tweets and newsfeeds, and utilized Redis as Message Queue Broker to deliver asynchronizedfeeds fanout tasks by using Celery.
+3. Utilized [`Memcache`](https://github.com/linsomniac/python-memcached): cache friendship followings and user.
+4. Utilized [`Celery`](https://github.com/celery/celery) framework to ensure the stablility of FlashSale system. For example, restrict the request flow on multiple refreshing web page.
+5. Utilized [`ratelimiter`](https://github.com/jsocol/django-ratelimit) as a decorator to add limitations on user actions for RESTful APIs.
 # Next stage
 1. Deploy in a remote server, e.g. AWS
 2. Load balance.
