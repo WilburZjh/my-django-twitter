@@ -24,6 +24,12 @@ class Tweet(models.Model):
     content = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True) # 有时区（vagrant/server所在的时区）
 
+    # 新增的 field 一定要设置 null=True，否则 default = 0 会遍历整个表单去设置
+    # 导致 Migration 过程非常慢，从而把整张表单锁死，从而正常用户无法创建新的 tweets
+    likes_count = models.IntegerField(default=0, null=True)
+    comments_count = models.IntegerField(default=0, null=True)
+
+
     # Meta是一个配置信息。
     # 在创建Tweets这个model的时候会根据配置信息去创建。
     class Meta:
