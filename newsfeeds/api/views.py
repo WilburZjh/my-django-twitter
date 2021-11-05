@@ -24,6 +24,7 @@ class NewsFeedViewSet(viewsets.GenericViewSet):
 
         cached_newsfeeds = NewsFeedService.get_cached_newsfeeds(request.user.id)
         page = self.paginator.paginate_cached_list(cached_newsfeeds, request)
+        # page 是 None，代表了我想请求的数据不再 cache 中，需要直接去 DB 中获取。
         if page is None:
             queryset = NewsFeed.objects.filter(user=request.user)
             page = self.paginate_queryset(queryset)
