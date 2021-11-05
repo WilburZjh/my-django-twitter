@@ -5,6 +5,8 @@ from likes.models import Like
 from django.contrib.contenttypes.models import ContentType
 # from accounts.services import UserService
 from utils.memcached_helper import MemcachedHelper
+from comments.listeners import incr_comments_count, decr_comments_count
+from django.db.models.signals import post_save, pre_delete
 
 
 class Comment(models.Model):
@@ -42,3 +44,7 @@ class Comment(models.Model):
     def cached_user(self):
         # return UserService.get_user_through_cache(user_id=self.user_id)
         return MemcachedHelper.get_object_through_cache(User, self.user_id)
+
+
+post_save.connect(incr_comments_count, sender=Comment)
+pre_delete.connect(decr_comments_count, sender=Comment)

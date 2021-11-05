@@ -4,6 +4,8 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 # from accounts.services import UserService
 from utils.memcached_helper import MemcachedHelper
+from django.db.models.signals import pre_delete, post_save
+from likes.listeners import incr_likes_count, decr_likes_count
 
 
 class Like(models.Model):
@@ -44,3 +46,6 @@ class Like(models.Model):
     def cached_user(self):
         # return UserService.get_user_through_cache(self.user_id);
         return MemcachedHelper.get_object_through_cache(User, self.user_id)
+
+pre_delete.connect(decr_likes_count, sender=Like)
+post_save.connect(incr_likes_count, sender=Like)
