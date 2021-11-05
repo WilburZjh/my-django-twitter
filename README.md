@@ -15,8 +15,6 @@ Developed RESTful APIs for accounts, tweets, comments, friendships, likes, notif
 
 Get data from the MessageQueue based on the number of requests that each machine can handle. Even if there are high volume of requests per second, it just puts the requests in the MQ, and the message of the message queue is controlled by the system itself, so that the entire system will not be collapsed.
 
-Implement the limited purchase function by `Redis` instead of DB querying.
-
 
 # Optimizating
 1. Optimized tweet and newsfeed pagination by implementing a infinite scroll pagination instead of [`page-number-pagination`](https://github.com/encode/django-rest-framework/blob/master/rest_framework/pagination.py).
