@@ -9,7 +9,7 @@ Utilized databases:
 1. Relational : [`MySQL`](https://github.com/mysql),
 2. NoSQL: [`HBase`](https://github.com/apache/hbase), [`Redis`](https://github.com/redis/redis)
 
-Uploaded the user profile to [`Amazon S3`](https://aws.amazon.com/s3/).
+Uploaded the user avatar to [`Amazon S3`](https://aws.amazon.com/s3/).
 
 Developed RESTful APIs for accounts, tweets, comments, friendships, likes, notifications, and newsfeeds based on [`Django-Rest-Framework`](https://github.com/encode/django-rest-framework).
 
