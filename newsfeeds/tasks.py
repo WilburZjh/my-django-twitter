@@ -5,6 +5,7 @@ from tweets.models import Tweet
 from utils.time_constants import ONE_HOUR
 
 
+# 这个任务如果执行超过了 time_limit 就会报一个超时的错误。防止任务无休止的执行下去。
 @shared_task(time_limit=ONE_HOUR)
 def fanout_newsfeeds_task(tweet_id):
     # import 写在里面避免循环依赖
