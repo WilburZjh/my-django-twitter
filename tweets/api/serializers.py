@@ -1,11 +1,11 @@
-from rest_framework import serializers
-from tweets.models import Tweet
-from accounts.api.serializers import UserSerializer, UserSerializerForTweet
+from accounts.api.serializers import UserSerializerForTweet
 from comments.api.serializers import CommentSerializer
-from likes.services import LikeService
 from likes.api.serializers import LikeSerializer
+from likes.services import LikeService
+from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from tweets.constants import TWEET_PHOTOS_UPLOAD_LIMIT
+from tweets.models import Tweet
 from tweets.services import TweetService
 from utils.redis_helper import RedisHelper
 

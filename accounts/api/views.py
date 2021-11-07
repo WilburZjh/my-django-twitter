@@ -1,13 +1,3 @@
-from django.contrib.auth.models import User
-from django.contrib.auth import (
-    login as django_login,
-    logout as django_logout,
-    authenticate as django_authenticate,
-)
-from rest_framework import viewsets
-from rest_framework import permissions
-from rest_framework.decorators import action
-from rest_framework.response import Response
 from accounts.api.serializers import (
     LoginSerializer,
     SignupSerializer,
@@ -16,6 +6,19 @@ from accounts.api.serializers import (
     UserSerializerWithProfile,
 )
 from accounts.models import UserProfile
+
+from django.contrib.auth import (
+    login as django_login,
+    logout as django_logout,
+    authenticate as django_authenticate,
+)
+from django.contrib.auth.models import User
+from django.utils.decorators import method_decorator
+from ratelimit.decorators import ratelimit
+from rest_framework import permissions
+from rest_framework import viewsets
+from rest_framework.decorators import action
+from rest_framework.response import Response
 from utils.permissions import IsObjectOwner
 
 # design an User API to view and modify User table in DataBase.
@@ -44,6 +47,7 @@ class AccountViewSet(viewsets.ViewSet):
 
     # 2. localhost/api/accounts/login_status/ 无须userID，全局状态查看。
     @action(methods=['GET'], detail=False)
+    @method_decorator(ratelimit(key='ip', rate='3/s', method='GET', block=True))
     def login_status(self, request):
         data ={
             'has_logged_in':request.user.is_authenticated,
@@ -53,12 +57,16 @@ class AccountViewSet(viewsets.ViewSet):
             data['user'] = UserSerializer(request.user).data
         return Response(data)
 
+
     @action(methods=['POST'], detail=False)
+    @method_decorator(ratelimit(key='ip', rate='3/s', method='POST', block=True))
     def logout(self, request):
         django_logout(request)
         return Response({"success": True})
 
+
     @action(methods=['POST'], detail=False)
+    @method_decorator(ratelimit(key='ip', rate='3/s', method='POST', block=True))
     def login(self, request):
         # get username and password from request,
         # 直接这么写有问题，因为无法保证用户传入了username和password。
@@ -100,7 +108,9 @@ class AccountViewSet(viewsets.ViewSet):
             "user": UserSerializer(instance=user).data,
         })
 
+
     @action(methods=['POST'], detail=False)
+    @method_decorator(ratelimit(key='ip', rate='3/s', method='POST', block=True))
     def signup(self, request):
         serializer = SignupSerializer(data=request.data)
         if not serializer.is_valid():

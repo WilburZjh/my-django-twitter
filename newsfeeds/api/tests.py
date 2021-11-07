@@ -1,5 +1,4 @@
 from django.conf import settings
-from friendships.models import Friendship
 from newsfeeds.models import NewsFeed
 from newsfeeds.services import NewsFeedService
 from rest_framework.test import APIClient
