@@ -1,16 +1,18 @@
-from rest_framework import viewsets, status
-from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework.response import Response
-from friendships.models import Friendship
+from django.contrib.auth.models import User
+from django.utils.decorators import method_decorator
 from friendships.api.paginations import FriendshipPagination
 from friendships.api.serializers import (
     FollowingSerializer,
     FollowerSerializer,
     FriendshipSerializerForCreate,
 )
-from django.contrib.auth.models import User
+from friendships.models import Friendship
 from friendships.services import FriendshipService
+from ratelimit.decorators import ratelimit
+from rest_framework import viewsets, status
+from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.response import Response
 
 
 class FriendshipViewSet(viewsets.GenericViewSet):
@@ -28,6 +30,7 @@ class FriendshipViewSet(viewsets.GenericViewSet):
     # 这个默认的验证机制会调用self.get_object() ->这个方法会去取self.get_queryset()
     # GET api/friendships/pk/followers/ -> 看用户pk的followers
     @action(methods=['GET'], detail=True, permission_classes=[AllowAny])
+    @method_decorator(ratelimit(key='user_or_ip', rate='3/s', method='GET', block=True))
     def followers(self, request, pk):
         # http://localhost/api/friendships/1/followers/?page=1
         # 这个friendships是所有的数据，但是我们需要根据request里面指定的参数去决定要显示哪些数据。
@@ -65,6 +68,7 @@ class FriendshipViewSet(viewsets.GenericViewSet):
 
     # 我关注了哪些人
     @action(methods=['GET'], detail=True, permission_classes=[AllowAny])
+    @method_decorator(ratelimit(key='user_or_ip', rate='3/s', method='GET', block=True))
     def followings(self, request, pk):
         friendships = Friendship.objects.filter(from_user_id=pk).order_by('-created_at')
         # print('----------------------This is followings: {}.'.format(friendships))
@@ -83,6 +87,7 @@ class FriendshipViewSet(viewsets.GenericViewSet):
         return self.get_paginated_response(serializer.data)
 
     @action(methods=['POST'], detail=True, permission_classes=[IsAuthenticated])
+    @method_decorator(ratelimit(key='user', rate='10/s', method='POST', block=True))
     def follow(self, request, pk):
         # 检测pk是否存在
         self.get_object() #: 返回404
@@ -115,6 +120,7 @@ class FriendshipViewSet(viewsets.GenericViewSet):
         )
 
     @action(methods=['POST'], detail=True, permission_classes=[IsAuthenticated])
+    @method_decorator(ratelimit(key='user', rate='10/s', method='POST', block=True))
     def unfollow(self, request, pk):
         self.get_object()
         # 注意 pk 的类型是 str，所以要做类型转换

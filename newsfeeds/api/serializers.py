@@ -1,5 +1,5 @@
-from rest_framework import serializers
 from newsfeeds.models import NewsFeed
+from rest_framework import serializers
 from tweets.api.serializers import TweetListSerializer
 
 

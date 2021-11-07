@@ -1,5 +1,5 @@
-from testing.testcases import TestCase
 from rest_framework.test import APIClient
+from testing.testcases import TestCase
 
 LIKE_BASE_URL = '/api/likes/'
 LIKE_CANCEL_URL = '/api/likes/cancel/'
