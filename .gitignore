@@ -2,6 +2,11 @@
 .vagrant
 Vagrantfile
 media/
+hbase-2.4.8-bin.tar.gz
+hbase-2.4.8/
+jdk-8u311-linux-x64.tar.gz
+thrift-0.15.0.tar.gz
+thrift-0.15.0/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
